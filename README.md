@@ -21,7 +21,7 @@ ____
 
 Here is the unfinished frontend
 
-![Main](/images/Ethuan1.png)
+![Main](/public/main.png)
 
 ____
 
