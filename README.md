@@ -1,34 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# peer-to-peer-POC
 
-## Getting Started
+This is a Peer-To-Peer energy trading site that trades renewable energy between two different wallet addresses.
 
-First, run the development server:
+**NOTE** This is still a work in progress so some functions won't properly work. 
+_______
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+Here's how it works
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Users sign up for their Metamask wallet and since I have no API for the amount of energy they have, they input their amount with the increment function.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+With sample energy, they can use the main functions:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Listing the energy they possess to the market
+2. Buy energy from the market
+3. and to view how much energy they currently own
 
-## Learn More
+I am currently working on an additional function to register your local renewable energy data using timestamps and location, but this is in the future.
 
-To learn more about Next.js, take a look at the following resources:
+____
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Here is the unfinished frontend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+![Main](/images/Ethuan1.png)
 
-## Deploy on Vercel
+____
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Here is what I used to build it:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## The Frontend
+
+* Next.js
+* React.js
+* Ethers
+
+## The Backend
+
+* Hardhat
+* Chai
+* Axios
+* Ganache
+* Solidity
+
+___
+
+> **Disclaimer**
+> This repo is for demonstration purposes only. It is not yet complete and it still needs to expand features. 
+
+> Anyone is free to contribute to this dApp. 
+
+Hope you can learn a lot from this.
+Feel free to fork, and send your feedback on this Project
+
+Thanks!
+
