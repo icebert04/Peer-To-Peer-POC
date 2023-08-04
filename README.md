@@ -1,4 +1,4 @@
-# peer-to-peer-POC
+# Peer-To-Peer-POC
 
 This is a Peer-To-Peer energy trading site that trades renewable energy between two different wallet addresses.
 
@@ -21,7 +21,7 @@ ____
 
 Here is the unfinished frontend
 
-![Main](/images/Ethuan1.png)
+![Main](/public/main.png)
 
 ____
 
