@@ -1,12 +1,12 @@
-import { utils, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
 import RenewableEnergyCreditTrading from '../artifacts/contracts/RenewableEnergyCreditTrading.sol/RenewableEnergyCreditTrading.json';
 import RenewableEnergyRegistry from '../artifacts/contracts/RenewableEnergyRegistry.sol/RenewableEnergyRegistry.json';
 
 
 const networkId = 1337n; // Replace with the network ID where your contracts are deployed
-const tradingContractAddress = '0x4BBD31B615B71Dd41f65a9C0BAD564cCfEf51cA5';
-const registryContractAddress = '0x019f052A98A80010b330F5F83eeA97716252F5D3';
+const tradingContractAddress = '0x6c6bD2684F5bAB333000eED5c0bcF5FD597De84e';
+const registryContractAddress = '0x74A6dfa2f17140AfB440FC33b3907c40ddf927d7';
 
 const App = () => {
 const [account, setAccount] = useState('');
@@ -14,8 +14,10 @@ const [web3Provider, setWeb3Provider] = useState(null);
 const [tradingContract, setTradingContract] = useState(null);
 const [registryContract, setRegistryContract] = useState(null);
 const [energyCredits, setEnergyCredits] = useState(null);
-const [creditListingAmount, setCreditListingAmount] = useState('0');
-const [creditListingPrice, setCreditListingPrice] = useState('0');
+const [myEnergyCredits, setMyEnergyCredits] = useState([]);
+const [marketEnergyCredits, setMarketEnergyCredits] = useState([]);
+const [creditListingAmount, setCreditListingAmount] = useState('');
+const [creditListingPrice, setCreditListingPrice] = useState('');
 const [buyAmount, setBuyAmount] = useState('0');
 const [registryTimestamp, setRegistryTimestamp] = useState('');
 const [registryEnergyAmount, setRegistryEnergyAmount] = useState('0');
@@ -36,8 +38,6 @@ useEffect(() => {
         const registryContract = new ethers.Contract(registryContractAddress, RenewableEnergyRegistry.abi, signer);
         setTradingContract(tradingContract);
         setRegistryContract(registryContract);
-        const credits = await tradingContract.energyCredits(account);
-        setEnergyCredits(credits.toString());
       } else {
         console.log("test", network.chainId, networkId)
         alert('Please connect to the correct network');
@@ -49,15 +49,51 @@ useEffect(() => {
   init();
 }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (tradingContract && registryContract) {
-  //       const credits = await tradingContract.energyCredits();
-  //       setEnergyCredits(credits.toString());
-  //     }
-  //   };
-  //   fetchData();
-  // }, [tradingContract, registryContract]);
+  
+useEffect(() => {
+  const fetchEnergyCredits = async () => {
+    if (tradingContract && account) {
+      try {
+        const credits = await tradingContract.energyCredits(account);
+        setEnergyCredits(credits.toString());
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  fetchEnergyCredits();
+}, [tradingContract, account]);
+useEffect(() => {
+  const fetchMyEnergyCredits = async () => {
+    if (tradingContract && account) {
+      try {
+        const credits = await tradingContract.energyCredits(account);
+        setMyEnergyCredits(credits.toString());
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  fetchMyEnergyCredits();
+}, [tradingContract, account]);
+useEffect(() => {
+  const fetchMarketEnergyCredits = async () => {
+    if (tradingContract) {
+      try {
+        const credits = await tradingContract.getListedCredits();
+        setMarketEnergyCredits(credits);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  fetchMarketEnergyCredits();
+}, [tradingContract]);
+
+
   const handleIncrementEnergyCredits = async () => {
     if (tradingContract && account) {
       try {
@@ -88,19 +124,33 @@ useEffect(() => {
   
 
 
-const handleListCredits = async () => {
-  if (tradingContract && creditListingAmount > 0 && creditListingPrice > 0) {
-    try {
-      await tradingContract.listCreditForSale(creditListingAmount, utils.parseEther(creditListingPrice));
-      alert('Credits listed for sale successfully');
-    } catch (error) {
-      console.error(error);
-      alert('Error listing credits');
-    }
-  } else {
-    alert('Please enter valid credit listing amount and price');
+  const handleListCredits = async () => {
+    if (!creditListingAmount || Number(creditListingAmount) <= 0) {
+    alert('Please enter a valid credit listing amount');
+    return;
   }
-};
+  
+  
+  if (Number(creditListingAmount) > Number(myEnergyCredits)) {
+    alert('You cannot list more credits than you own');
+    return;
+  }
+  
+  
+    if (tradingContract && creditListingPrice > 0) {
+      try {
+        const priceInWei = ethers.parseEther(creditListingPrice);
+        await tradingContract.listCreditForSale(creditListingAmount, priceInWei);
+        alert('Credits listed for sale successfully');
+      } catch (error) {
+        console.error(error);
+        alert('Error listing credits');
+      }
+    } else {
+      alert('Please enter valid credit listing price');
+    }
+  };
+  
 
 const handleBuyCredits = async () => {
   if (tradingContract && buyAmount > 0) {
@@ -140,6 +190,27 @@ const handleRegisterEnergyData = async () => {
           <h3>Increment Energy Credits</h3>
           <button onClick={handleIncrementEnergyCredits}>Increment</button>
         </div>
+
+        <div>
+          <h2>My Energy Credits: {myEnergyCredits}</h2>
+        </div>
+
+        <div>
+          <h3>Market Energy Credits</h3>
+        {marketEnergyCredits ? (
+          <ul>
+            {marketEnergyCredits.map((credit) => (
+              <li key={credit.creditId}>
+                Amount: {credit.quantity} credits, Price:{" "}
+                {ethers.formatEther(credit.pricePerUnit, 18)} ETH
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading market energy credits...</p>
+        )}
+        </div>
+
         <h2>Current Energy Credits Available: {energyCredits}</h2>
 
         <div>

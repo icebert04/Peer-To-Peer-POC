@@ -16,6 +16,7 @@ contract RenewableEnergyCreditTrading is Initializable {
     }
 
     mapping(uint => RenewableEnergyCredit) public credits;
+    uint[] public listedCreditIds; // Keep track of creditIds that are listed for sale
 
     event CreditListed(
         uint indexed creditId,
@@ -64,6 +65,8 @@ contract RenewableEnergyCreditTrading is Initializable {
             true
         );
 
+        listedCreditIds.push(nextCreditId);
+
         emit CreditListed(nextCreditId, msg.sender, quantity, pricePerUnit);
 
         nextCreditId++;
@@ -96,5 +99,21 @@ contract RenewableEnergyCreditTrading is Initializable {
         payable(seller).transfer(totalPrice);
 
         emit TradeCompleted(creditId, msg.sender, quantity, totalPrice);
+    }
+
+    // Function to get the list of renewable energy credits available for sale in the market
+    function getListedCredits()
+        external
+        view
+        returns (RenewableEnergyCredit[] memory)
+    {
+        RenewableEnergyCredit[]
+            memory listedCredits = new RenewableEnergyCredit[](
+                listedCreditIds.length
+            );
+        for (uint i = 0; i < listedCreditIds.length; i++) {
+            listedCredits[i] = credits[listedCreditIds[i]];
+        }
+        return listedCredits;
     }
 }
